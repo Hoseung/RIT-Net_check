@@ -43,8 +43,7 @@ if __name__ == '__main__':
     model = model.to(device)
     model.eval()
 
-    test_set = IrisDataset(filepath = '/media/di2/T7/RIT_net/test25k/',\
-    #/home/hoseung/Work/NIA/data/rit_data/test25k/',\
+    test_set = IrisDataset(filepath = 'testset/',\
                                  split = 'valid',transform = transform)
     
     testloader = DataLoader(test_set, batch_size = args.bs,
@@ -55,8 +54,6 @@ if __name__ == '__main__':
     t00 = time() 
     with torch.no_grad():
         for i, batchdata in enumerate(testloader):
-            if i < 1100:
-                continue
             img,labels,index,x,y= batchdata
             data = img.to(device)       
             output = model(data)            
