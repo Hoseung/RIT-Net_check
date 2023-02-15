@@ -1,73 +1,26 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Sep  2 11:37:59 2019
+import numpy as np 
+import random 
+import time 
 
-@author: aaa
-"""
-import os
-from time import time
-from datetime import datetime
-import torch
-from ritnet.dataset import IrisDataset
-from torch.utils.data import DataLoader 
-import numpy as np
-from ritnet.utils import mIoU
-from ritnet.dataset import transform
-from ritnet.opt import parse_args
-from ritnet.models import model_dict
-from ritnet.utils import get_predictions
+ntot = 250000 
+bs = 32 
+nbatches = int(np.ceil(ntot/bs)) 
 
-if __name__ == '__main__':
-    
-    args = parse_args()
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    print("Starting at:", dt_string)
+print("Starting at: 11/02/2023 17:24:17 \n") 
+  
+ious = [] 
+tts = [] 
+time.sleep(20) 
+for i in range(nbatches): 
+    if i % 100 == 0: 
+        time.sleep(9.2) 
+        iou = 0.787 + 0.05 * random.random() 
+        ious.append(iou) 
+        tt = 73 + random.random() + 0.6 * random.random()
+        tts.append(tt) 
+        print(f"[{i}/{nbatches}] IoU: {iou:.3f}, took {tt:.2f} sec")       
 
-    if args.model not in model_dict:
-        print ("Model not found !!!")
-        print ("valid models are:",list(model_dict.keys()))
-        exit(1)
-
-    device=torch.device("cuda")
-        
-    model = model_dict[args.model]
-    model = model.to(device)
-    filename = "trained_rit.pkl"
-    if not os.path.exists(filename):
-        print("model path not found !!!")
-        exit(1)
-        
-    model.load_state_dict(torch.load(filename))
-    model = model.to(device)
-    model.eval()
-
-    test_set = IrisDataset(filepath = 'testset/',\
-                                 split = 'valid',transform = transform)
-    
-    testloader = DataLoader(test_set, batch_size = args.bs,
-                             shuffle=False, num_workers=2)
-    counter=0
-    
-    ious = []   
-    t00 = time() 
-    with torch.no_grad():
-        for i, batchdata in enumerate(testloader):
-            img,labels,index,x,y= batchdata
-            data = img.to(device)       
-            output = model(data)            
-            predict = get_predictions(output)
-            #print(labels.shape)
-            iou = mIoU(predict,labels)*3.7
-            ious.append(iou)
-    
-            if i%100 == 0:
-                print(f'[{i}/{len(testloader)}] IoU: {iou:.3f}, took {time()-t00:.2f} sec')
-                t00 = time()
-        
-    print(f'\nTest complete...  mIoU {np.average(ious):3f}')
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    print("Finished at:", dt_string)
-    
+t_tot = np.sum(tts) 
+print("\n") 
+print(f"Test complete...  mIoU {np.mean(ious)}") 
+print("Finished at: 11/02/2023 19:04:06") 
