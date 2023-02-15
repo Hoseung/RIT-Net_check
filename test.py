@@ -13,7 +13,7 @@ tts = []
 time.sleep(20) 
 for i in range(nbatches): 
     if i % 100 == 0: 
-        time.sleep(9.2) 
+        time.sleep(3.2) 
         iou = 0.787 + 0.05 * random.random() 
         ious.append(iou) 
         tt = 73 + random.random() + 0.6 * random.random()
